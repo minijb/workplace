@@ -33,7 +33,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 │   ├── generated/INDEX.md     # 生成报告（建议入 .gitignore）
 │   ├── reference/INDEX.md     # 外部知识
 │   ├── adr/INDEX.md           # 架构决策记录
-│   └── plan/                 # 计划系统托管（仅建空目录，见 §3 TODO）
+│   └── plan/                 # 计划系统托管（仅建空目录，见 §3）
 └── src/
 ```
 
@@ -49,7 +49,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 │   ├── generated/INDEX.md
 │   ├── reference/INDEX.md
 │   ├── adr/INDEX.md
-│   └── plan/                 # 计划系统托管（仅建空目录，见 §3 TODO）
+│   └── plan/                 # 计划系统托管（仅建空目录，见 §3）
 └── src/
     ├── ordering/CONTEXT.md
     └── billing/CONTEXT.md
@@ -66,10 +66,10 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 | `docs/generated/` | 自动生成的产物：分析报告、迁移计划、审计输出 | 由工具生成时；建议加入 `.gitignore` |
 | `docs/reference/` | 外部知识：第三方 API 摘要、标准/规范引用、调研笔记 | 引入外部依赖或约束时 |
 | `docs/adr/` | 架构决策记录：`NNNN-slug.md` | 决策「难以回退」时（判定见 `skills/lib/adr-format.md`） |
-| `docs/plan/` | 计划文件：**由「计划系统」（planning system）托管**，本技能仅建空目录，不生成 INDEX、不维护内容 | 立即创建空目录 |
+| `docs/plan/` | 计划文件：**由「计划系统」（planning system）托管**——`plan-create` 写入、`plan-execute` 推进、`plan-track` 汇总，三者共享格式 `skills/lib/plan-format.md`。本技能仅建空目录，不生成 INDEX、不维护内容 | 立即创建空目录 |
 | `*/INDEX.md` | 本目录文件的路径与一句话描述 | 目录下文件增删时同步 |
 
-> **TODO（待办）**：`docs/plan/` 由独立的「计划系统」托管其内容与索引。该系统尚未实现，**后续添加**；在此之前本技能仅创建空目录，不向其写入任何文件。
+> **计划系统已实现**：`docs/plan/` 由三个 skill 托管——`plan-create`（规划，写入计划）、`plan-execute`（执行，推进任务状态）、`plan-track`（只读汇总进度）。文件格式契约见 `skills/lib/plan-format.md`。本技能仍只负责创建空目录，不向其写入文件；计划系统不依赖 `INDEX.md`，发现机制是扫 `docs/plan/*.md` 读 frontmatter（见 `plan-track`）。
 
 ## 4. INDEX.md（每个 docs 目录必备）
 
