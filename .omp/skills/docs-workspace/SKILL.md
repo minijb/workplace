@@ -33,7 +33,10 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 │   ├── generated/INDEX.md     # 生成报告（建议入 .gitignore）
 │   ├── reference/INDEX.md     # 外部知识
 │   ├── adr/INDEX.md           # 架构决策记录
-│   └── plan/                 # 计划系统托管（仅建空目录，见 §3）
+│   └── plan/                  # 计划系统托管（见 §3）
+│       ├── INDEX.md           # 计划索引（结构异于其他 INDEX，见 §4）
+│       ├── active/            # 非终态：进行中/受阻/放弃
+│       └── completed/         # 仅 status: done
 └── src/
 ```
 
@@ -49,7 +52,10 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 │   ├── generated/INDEX.md
 │   ├── reference/INDEX.md
 │   ├── adr/INDEX.md
-│   └── plan/                 # 计划系统托管（仅建空目录，见 §3）
+│   └── plan/                  # 计划系统托管（见 §3）
+│       ├── INDEX.md           # 计划索引（结构异于其他 INDEX，见 §4）
+│       ├── active/            # 非终态：进行中/受阻/放弃
+│       └── completed/         # 仅 status: done
 └── src/
     ├── ordering/CONTEXT.md
     └── billing/CONTEXT.md
@@ -66,10 +72,10 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 | `docs/generated/` | 自动生成的产物：分析报告、迁移计划、审计输出 | 由工具生成时；建议加入 `.gitignore` |
 | `docs/reference/` | 外部知识：第三方 API 摘要、标准/规范引用、调研笔记 | 引入外部依赖或约束时 |
 | `docs/adr/` | 架构决策记录：`NNNN-slug.md` | 决策「难以回退」时（判定见 `skills/lib/adr-format.md`） |
-| `docs/plan/` | 计划文件：**由「计划系统」（planning system）托管**——`plan-create` 写入、`plan-execute` 推进、`plan-track` 汇总，三者共享格式 `skills/lib/plan-format.md`。本技能仅建空目录，不生成 INDEX、不维护内容 | 立即创建空目录 |
+| `docs/plan/` | 计划目录（任务树）：**由「计划系统」（planning system）托管**——`plan-create` 写入、`plan-execute` 推进、`plan-track` 汇总，三者共享格式 `skills/lib/plan-format.md`。一个计划是一个**目录树**（group 目录 + leaf 文件）。本技能只创建 `active/`、`completed/` 子目录与顶层 `INDEX.md` 骨架（两段空表），不维护计划内容 | 立即创建（含子目录与 INDEX 骨架） |
 | `*/INDEX.md` | 本目录文件的路径与一句话描述 | 目录下文件增删时同步 |
 
-> **计划系统已实现**：`docs/plan/` 由三个 skill 托管——`plan-create`（规划，写入计划）、`plan-execute`（执行，推进任务状态）、`plan-track`（只读汇总进度）。文件格式契约见 `skills/lib/plan-format.md`。本技能仍只负责创建空目录，不向其写入文件；计划系统不依赖 `INDEX.md`，发现机制是扫 `docs/plan/*.md` 读 frontmatter（见 `plan-track`）。
+> **计划系统已实现**：`docs/plan/` 由三个 skill 托管——`plan-create`（规划，在 `active/<slug>-<date>/` 写入任务树）、`plan-execute`（执行 leaf、刷新 roll-up；`done` 时把**整个计划目录**移入 `completed/`）、`plan-track`（只读汇总，先读顶层 INDEX 再遍历树对账）。格式契约见 `skills/lib/plan-format.md`。本技能创建 `active/`、`completed/` 与顶层 `INDEX.md` 骨架；顶层 INDEX 与各 group `INDEX.md` 由 create/execute 维护（结构异于其他 INDEX，见 `plan-format.md`），track 只读。
 
 ## 4. INDEX.md（每个 docs 目录必备）
 
@@ -82,7 +88,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 - **先索引后正文**：进入任何 `docs/` 目录先读 `INDEX.md`，再按需加载具体文件——禁止盲猜文件名。
 - **同步维护**：文件增删时立即更新同级 `INDEX.md`。
 - **粒度**：`docs/INDEX.md` 登记子目录；各子目录的 `INDEX.md` 登记其下具体文件。
-- **例外**：`docs/plan/` 由计划系统托管，本技能不为其创建 `INDEX.md`；仅由 `docs/INDEX.md` 登记 `./plan/` 一行。
+- **特例**：`docs/plan/INDEX.md` 结构异于其他目录（分 active/completed 段、带状态列），格式见 `skills/lib/plan-format.md`「INDEX.md 结构」；本技能创建其骨架（两段空表），内容由计划系统维护。
 
 ## 5. 递归 CONTEXT.md（术语表）
 
@@ -100,7 +106,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 
 ## 7. 完成标准
 
-- 缺失的 `docs/{spec,generated,reference,adr}/` 均已创建，每个目录（含 `docs/` 自身）含 `INDEX.md`；`docs/plan/` 仅创建为**空目录**（不建 INDEX）。
+- 缺失的 `docs/{spec,generated,reference,adr}/` 均已创建，每个目录（含 `docs/` 自身）含 `INDEX.md`；`docs/plan/` 创建为含 `active/`、`completed/`、`INDEX.md` 骨架（两段空表）。
 - `docs/INDEX.md` 已登记各子目录。
 - 单上下文：根级存在 `CONTEXT.md`。多上下文：根级同时存在 `CONTEXT.md`（共用术语）与 `CONTEXT-MAP.md`。二者皆无时按单上下文初始化根级 `CONTEXT.md`。
 - `docs/generated/` 若在版本控制下，写入 `.gitignore`，并保留其 `INDEX.md`。

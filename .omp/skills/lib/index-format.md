@@ -6,7 +6,7 @@
 
 - `docs/INDEX.md`：登记子目录（spec / generated / reference / adr / **plan**）。
 - 各子目录的 `INDEX.md`（`docs/spec/`、`docs/generated/`、`docs/reference/`、`docs/adr/`）：登记其下的具体文件。
-- **`docs/plan/` 例外**：由计划系统托管，不创建 `INDEX.md`；仅在 `docs/INDEX.md` 中登记一行。
+- **`docs/plan/` 特例**：由计划系统托管，结构异于其他目录。顶层 `docs/plan/INDEX.md` 是扁平计划注册表（分 active/completed 段、带状态/进度列）；**每个计划本身是一个目录树**，树中每个 group 目录各有自己的 `INDEX.md`（直系子节点 + 派生状态）。两者格式均见 `skills/lib/plan-format.md`「INDEX.md 结构」。
 
 ## 模板（子目录，登记具体文件）
 
@@ -34,7 +34,7 @@ docs 子目录的相对路径与一句话说明。
 | `./generated/` | 工具/agent 生成的产物（已入 .gitignore） |
 | `./reference/` | 外部知识：第三方 API 摘要、规范引用、调研笔记 |
 | `./adr/` | 架构决策记录 |
-| `./plan/` | 计划系统托管的计划文件（仅建空目录） |
+| `./plan/` | 计划系统：`active/` 进行中、`completed/` 已完成，`INDEX.md` 为注册表 |
 ```
 
 ## 规则
