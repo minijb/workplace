@@ -21,39 +21,30 @@
 | **单上下文**（多数） | 一份 `CONTEXT.md`，承载全部术语 | 无 |
 | **多上下文**（多模块 / monorepo） | `CONTEXT.md`（**跨上下文通用术语**）+ `CONTEXT-MAP.md`（上下文清单与关系） | 每个上下文目录内各一份 `CONTEXT.md`（该上下文专属术语） |
 
-**判定依据**（摘自 `skills/lib/context-format.md`）：仓库内有多个**相互独立、各自具备完整领域语义**的模块（如 `src/ordering`、`src/billing`）即为多上下文；仅是分层（`controllers/services/models`）仍属单上下文。无法判断时询问用户。
+> 单 / 多上下文的判定依据（含「无法判断时询问用户」）见 `skills/lib/context-format.md` 末段，本文件不重述。
 
-## CONTEXT.md 段落结构
+## CONTEXT.md 段落结构（骨架名）
 
-一份 `CONTEXT.md` 由以下段落组成（确切模板见 `skills/lib/context-format.md`）：
+一份 `CONTEXT.md` 由以下段落组成——这里只列骨架名，**确切字段 / 示例 / 写法见 `skills/lib/context-format.md` 模板**，本文件不重述：
 
-1. **标题 + 一句话**：上下文名称 + 这个上下文负责什么、边界在哪。
-2. **Scope**：
-   - **In**：本上下文管辖的概念 / 能力（如「下单、订单状态机、取消」）。
-   - **Out**：显式声明不属于本上下文的内容（如「支付、库存、物流」）。
-3. **Language**（术语表主体）：每个术语一个子节。
-   - 定义：一两句话说清「是什么」（不是「做什么」）。
-   - **Aliases**：同一概念的其他叫法，选其中一个作主词。
-   - **Avoid**：明确不要使用的近义词，消歧义。
-   - **Example**：最小实例，帮助快速对齐。
-   - **See also**：关联术语（跨文件 / 跨上下文互链）。
-4. **Relationships**：术语之间的关系速览，一句话勾勒模型骨架（如「一个 Customer 拥有多个 Order」）。
-5. **Open Questions**：尚未达成共识、待澄清的术语——写下来避免被默默忽略。
+1. **标题 + 一句话**：这个上下文是什么。
+2. **Scope**：本上下文管什么（In）、不管什么（Out）。
+3. **Language**：术语表主体，每术语一个子节。
+4. **Relationships**：术语之间的关系速览。
+5. **Open Questions**：尚未达成共识、待澄清的术语。
 
 ## CONTEXT-MAP.md（仅多上下文）
 
 根级 `CONTEXT-MAP.md` 是上下文清单与关系图，由两段组成（模板见 `skills/lib/context-format.md`）：
 
-- **Contexts**：各限界上下文的路径 + 一句话说明（如 `[Ordering](./src/ordering/CONTEXT.md) — 接收并跟踪订单`）。
-- **Relationships**：上下文之间的集成关系（如「Ordering → Fulfillment: 发布 OrderPlaced 事件」）。
+- **Contexts**：各限界上下文的路径 + 一句话说明。
+- **Relationships**：上下文之间的集成关系。
 
 文件开头通常指向根级 `CONTEXT.md` 作为项目级共用术语的入口。
 
 ## 术语归属规则（避免重复）
 
-- **跨上下文通用的术语** → 根级 `CONTEXT.md`（如 `Money`、`CustomerId`、`Tenant`）。
-- **仅属某上下文的术语** → 该模块的 `CONTEXT.md`。
-- **每个术语只写一处**，不重复定义；必要时用 `See also` 互链。
+每个术语只写一处：跨上下文通用 → 根级 `CONTEXT.md`；仅属某上下文 → 该模块 `CONTEXT.md`。**归属规则原文（含示例与「术语只归一处」）见 `skills/lib/context-format.md#规则`**，本文件不重述。
 
 ## 什么不该进 CONTEXT.md
 
@@ -68,4 +59,7 @@
 
 ## 格式契约
 
-确切模板、规则与单 / 多上下文判定原文见 **`skills/lib/context-format.md`**——本文件只做结构与归属的导航解释，不重述模板。
+- 确切模板、规则与单 / 多上下文判定原文 → `skills/lib/context-format.md`（只读参考）。
+- **修订 / 新增术语**（写内容）→ `grilling-with-context`（边盘问边把术语落进 `CONTEXT.md`、决策入 `docs/adr/`）；仅搭术语表骨架 → `docs-workspace`。
+
+本文件只做结构与归属的导航解释，不重述模板、不执行写入。

@@ -25,15 +25,7 @@
 └── src/  …                       # 多上下文时各模块内放 CONTEXT.md
 ```
 
-格式契约不在 `docs/` 内，而在 skills 层——它们是 docs 各文件的「写法说明书」：
-
-```
-skills/lib/
-├── context-format.md   # CONTEXT.md 模板与规则
-├── index-format.md     # 各 INDEX.md 模板与规则
-├── adr-format.md       # ADR 模板、编号、何时创建
-└── plan-format.md      # 计划文件格式（plan-create/execute/track 共享）
-```
+格式契约不在 `docs/` 内，而在 skills 层——它们是 docs 各文件的「写法说明书」。**现有契约请 `read skills/lib/` 目录获取**（不静态列举，避免 lib 增删时此处漂移）；当前覆盖 CONTEXT / INDEX / ADR / plan 各自的 `*-format.md`。
 
 > 规则：docs 文件的**内容**（规格、决策、术语）放 `docs/`；这些文件的**写法契约**放 `skills/lib/`。use-docs 只指路，不重述契约。
 
@@ -113,8 +105,4 @@ skills/lib/
 
 ## INDEX.md 通用纪律（所有 docs 目录）
 
-- **先索引后正文**：进入任何 `docs/` 目录先读其 `INDEX.md`，再按需加载具体文件——禁止盲猜文件名。
-- **同步维护**：新增 / 删除文件时立即更新同级 `INDEX.md`，不积压。
-- **粒度**：`docs/INDEX.md` 登记子目录；各子目录 INDEX 登记其下具体文件；`docs/plan/INDEX.md` 是特例（见上）。
-- **相对路径**：路径以 `./` 开头、相对当前目录。
-- **契约**：`skills/lib/index-format.md`。
+INDEX 通用纪律（先索引后正文 / 同步维护 / 粒度 / 相对路径）见 `skills/lib/index-format.md#规则`。`docs/plan/INDEX.md` 是结构特例，见 `skills/lib/plan-format.md`「INDEX.md 结构」。

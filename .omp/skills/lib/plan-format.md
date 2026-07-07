@@ -121,6 +121,7 @@ plan:
   default_mode: hybrid                  # 见「模式词表」——planner 决定，可被单 leaf 覆盖
   created: 2026-07-05
   updated: 2026-07-05                   # executor 每次推进 leaf 状态时刷新
+  replan_count: 0                      # executor 每次局部 replan 自增；≥3 未收敛→blocked（见 plan-execute/references/replan.md §4）
   constraints:                          # 计划级硬约束；executor 不得违反
     - 鉴权中断不超过 5 分钟
   acceptance:                           # 计划级验收；全部满足才能置 done
@@ -227,10 +228,22 @@ task:
 | `context` | 背景，只解释为什么做 |
 | `blocker` | 阻塞项，含未决决策或外部依赖，定稿前需先解决 |
 
+## reference type 词表
+
+`plan.references[].type`（单选）：
+
+| 值 | 含义 |
+|---|---|
+| `prd` | 产品需求文档 |
+| `issue` | issue 跟踪条目 |
+| `spec` | `docs/spec/` 下的功能规格 |
+| `adr` | `docs/adr/` 下的架构决策记录 |
+| `doc` | 其他文档 / 外部链接 |
+
 ## 规则
 
 - **唯一真源**：`plan.status` 在 `plan.md`；leaf `status` 在 task 文件；group 状态派生不存储。executor 不在内存里另持一份。
-- **结构稳定**：frontmatter 块名（`plan` / `task`）与字段名（`goal`/`references`/`constraints`/`acceptance`/`default_mode`；`id`/`title`/`status`/`mode`/`depends`/`acceptance`/`files`/`verification`）固定，不得自创同义词。group 无 frontmatter。
+- **结构稳定**：frontmatter 块名（`plan` / `task`）与字段名（`goal`/`references`/`constraints`/`acceptance`/`default_mode`/`replan_count`；`id`/`title`/`status`/`mode`/`depends`/`acceptance`/`files`/`verification`）固定，不得自创同义词。group 无 frontmatter。
 - **Dotted ID 一致**：每个节点声明的 `id` 必须与路径序号一致；`depends` 中的 id 必须存在；依赖图**计划内封闭**（不跨计划）。
 - **写前先读**：executor/tracker 改读计划前必须先 `read` 相关文件与目录 `INDEX.md`，避免覆盖并发改动。
 - **叶子可执行**：只有 leaf 携带 `acceptance`/`verification`/`files`/`mode`；group 不可执行，不携带这些字段。

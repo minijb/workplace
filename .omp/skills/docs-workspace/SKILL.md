@@ -61,7 +61,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
     └── billing/CONTEXT.md
 ```
 
-是否多上下文，依据第 1 步对源码目录的扫描结果判断（有多个相互独立、各自具备完整领域语义的模块即为多上下文；仅分层不算）；不确定时询问用户。
+是否多上下文，依据第 1 步对源码目录的扫描结果判断（有多个相互独立、各自具备完整领域语义的模块即为多上下文；仅分层不算）；二者皆无（如全新空仓库、无源码可判）时按单上下文初始化，不确定时询问用户。模块 CONTEXT.md 放在对应限界上下文的根目录（`src/<mod>/`、`packages/<mod>/`、`apps/<mod>/` 均可）。
 
 ## 3. 各目录职责
 
@@ -75,7 +75,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 | `docs/plan/` | 计划目录（任务树）：**由「计划系统」（planning system）托管**——`plan-create` 写入、`plan-execute` 推进、`plan-track` 汇总，三者共享格式 `skills/lib/plan-format.md`。一个计划是一个**目录树**（group 目录 + leaf 文件）。本技能只创建 `active/`、`completed/` 子目录与顶层 `INDEX.md` 骨架（两段空表），不维护计划内容 | 立即创建（含子目录与 INDEX 骨架） |
 | `*/INDEX.md` | 本目录文件的路径与一句话描述 | 目录下文件增删时同步 |
 
-> **计划系统已实现**：`docs/plan/` 由三个 skill 托管——`plan-create`（规划，在 `active/<slug>-<date>/` 写入任务树）、`plan-execute`（执行 leaf、刷新 roll-up；`done` 时把**整个计划目录**移入 `completed/`）、`plan-track`（只读汇总，先读顶层 INDEX 再遍历树对账）。格式契约见 `skills/lib/plan-format.md`。本技能创建 `active/`、`completed/` 与顶层 `INDEX.md` 骨架；顶层 INDEX 与各 group `INDEX.md` 由 create/execute 维护（结构异于其他 INDEX，见 `plan-format.md`），track 只读。
+> **计划系统已实现**：`docs/plan/` 由三个 skill 托管——`plan-create`（规划，在 `active/<slug>-<date>/` 写入任务树）、`plan-execute`（执行 leaf、刷新 roll-up；`done` 时把**整个计划目录**移入 `completed/`）、`plan-track`（只读汇总，先读顶层 INDEX 再遍历树对账）。格式契约见 `skills/lib/plan-format.md`——执行时先 read 该文件。本技能创建 `active/`、`completed/` 与顶层 `INDEX.md` 骨架；顶层 INDEX 与各 group `INDEX.md` 由 create/execute 维护（结构异于其他 INDEX，见 `plan-format.md`），track 只读。
 
 ## 4. INDEX.md（每个 docs 目录必备）
 
@@ -87,8 +87,23 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 
 - **先索引后正文**：进入任何 `docs/` 目录先读 `INDEX.md`，再按需加载具体文件——禁止盲猜文件名。
 - **同步维护**：文件增删时立即更新同级 `INDEX.md`。
+- **stale 修正（既有项目）**：`INDEX.md` 已存在但漏登记既有文件时补齐缺失行、登记了已删文件时移除该行——仅此类增量编辑允许，不得整体重写。
 - **粒度**：`docs/INDEX.md` 登记子目录；各子目录的 `INDEX.md` 登记其下具体文件。
-- **特例**：`docs/plan/INDEX.md` 结构异于其他目录（分 active/completed 段、带状态列），格式见 `skills/lib/plan-format.md`「INDEX.md 结构」；本技能创建其骨架（两段空表），内容由计划系统维护。
+- **特例**：`docs/plan/INDEX.md` 结构异于其他目录（分 active/completed 段、带状态列），格式见 `skills/lib/plan-format.md`「INDEX.md 结构」——执行时先 read 该文件；本技能创建其骨架（两段空表，见下），内容由计划系统维护。
+
+`docs/plan/INDEX.md` 创建时的空骨架（删净示例行；两表列数不同——进行中 6 列、已完成 4 列——勿混）：
+
+```md
+# 计划索引
+
+## 进行中（active/）
+| 路径 | 标题 | 状态 | 进度 | 模式 | 更新 |
+|---|---|---|---|---|---|
+
+## 已完成（completed/）
+| 路径 | 标题 | 完成日 | 结果 |
+|---|---|---|
+```
 
 ## 5. 递归 CONTEXT.md（术语表）
 
@@ -98,6 +113,7 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 
 - 单上下文：根级一份 `CONTEXT.md`；多上下文：根级 `CONTEXT.md`（共用术语）+ `CONTEXT-MAP.md` + 各模块 `CONTEXT.md`。
 - 只写术语、要武断、定义紧凑、随用随写、不含实现细节。
+- init 阶段先种占位骨架（仅章节标题），真正术语按 `context-format.md`「随用随写」补充——不为凑模板杜撰术语。
 - 多上下文时：跨上下文通用的术语归**根级** `CONTEXT.md`，专属术语归各模块 `CONTEXT.md`，不重复。
 
 ## 6. ADR（架构决策记录）
@@ -108,6 +124,13 @@ description: 检查项目根目录结构并搭建标准化的文档工作区（d
 
 - 缺失的 `docs/{spec,generated,reference,adr}/` 均已创建，每个目录（含 `docs/` 自身）含 `INDEX.md`；`docs/plan/` 创建为含 `active/`、`completed/`、`INDEX.md` 骨架（两段空表）。
 - `docs/INDEX.md` 已登记各子目录。
-- 单上下文：根级存在 `CONTEXT.md`。多上下文：根级同时存在 `CONTEXT.md`（共用术语）与 `CONTEXT-MAP.md`。二者皆无时按单上下文初始化根级 `CONTEXT.md`。
-- `docs/generated/` 若在版本控制下，写入 `.gitignore`，并保留其 `INDEX.md`。
+- 单上下文：根级存在 `CONTEXT.md`。多上下文：根级 `CONTEXT.md`（共用术语）+ `CONTEXT-MAP.md` + 各上下文目录各一份 `CONTEXT.md`。二者皆无时按单上下文初始化根级 `CONTEXT.md`。
+- `docs/generated/` 若在版本控制下，写入 `.gitignore`，并保留其 `INDEX.md`。逐字 pattern：
+
+  ```
+  docs/generated/*
+  !docs/generated/INDEX.md
+  ```
+
+  裸 `docs/generated/`（带尾斜杠、无 negation）会连 INDEX.md 一起忽略，**不要这么写**。
 - 向用户报告：新建/跳过了哪些路径、当前结构是单上下文还是多上下文。
